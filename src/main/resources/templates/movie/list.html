@@ -59,7 +59,7 @@
             <span class="flex col-span-4 mt-2 sm:mt-auto sm:justify-end">
                 <nav aria-label="Table navigation">
                     <ul class="inline-flex items-center">
-                        <li>
+                        <li th:if="${result.prev}">
                             <a class="px-3 py-1 rounded-md rounded-l-lg focus:outline-none focus:shadow-outline-purple"
                                 aria-label="Previous"
                                 th:href="@{list(page=${result.prevPage},size=${result.pageRequestDTO.size},type=${pageRequestDTO.type},keyword=${pageRequestDTO.keyword})}">
@@ -77,7 +77,7 @@
                             </a>
                         </li>
 
-                        <li>
+                        <li th:if="${result.next}">
                             <a class="px-3 py-1 rounded-md rounded-r-lg focus:outline-none focus:shadow-outline-purple"
                                 aria-label="Next"
                                 th:href="@{list(page=${result.nextPage},size=${result.pageRequestDTO.size},type=${pageRequestDTO.type},keyword=${pageRequestDTO.keyword})}">
