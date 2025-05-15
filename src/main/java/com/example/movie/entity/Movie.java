@@ -15,14 +15,12 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @ToString(exclude = "movieImages")
-@AllArgsConstructor
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Entity
-
 public class Movie extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long mno;
@@ -31,12 +29,11 @@ public class Movie extends BaseEntity {
 
     @ElementCollection
     @Builder.Default
-    // @OneToMany(mappedBy = "movie",cascade = CascadeType.PERSIST)
+    // @OneToMany(mappedBy = "movie", cascade = CascadeType.PERSIST)
     private List<MovieImage> movieImages = new ArrayList<>();
 
     public void changeTitle(String title) {
         this.title = title;
-
     }
 
     public void addImage(MovieImage movieImage) {

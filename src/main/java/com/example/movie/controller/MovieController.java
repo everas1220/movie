@@ -12,6 +12,8 @@ import com.example.movie.dto.MovieDTO;
 import com.example.movie.dto.PageRequestDTO;
 import com.example.movie.dto.PageResultDTO;
 import com.example.movie.service.MovieService;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Log4j2
 @Controller
@@ -21,6 +23,28 @@ public class MovieController {
 
     private final MovieService movieService;
 
+    @PostMapping("/remove")
+    public String removeMovie(Long mno, PageRequestDTO pageRequestDTO, RedirectAttributes rttr) {
+        log.info("영화 삭제 {}", mno);
+
+        movieService.deleteRow(mno);
+
+        rttr.addAttribute("page", pageRequestDTO.getPage());
+        rttr.addAttribute("size", pageRequestDTO.getSize());
+        rttr.addAttribute("type", pageRequestDTO.getType());
+        rttr.addAttribute("keyword", pageRequestDTO.getKeyword());
+
+        return "redirect:/movie/list";
+    }
+
+    @GetMapping({ "/read", "modify" })
+    public void getMovie(Long mno, PageRequestDTO pageRequestDTO, Model model) {
+        log.info("movie 상세 조회 {}", mno);
+
+        MovieDTO dto = movieService.getRow(mno);
+        model.addAttribute("dto", dto);
+    }
+
     @GetMapping("/list")
     public void getList(PageRequestDTO pageRequestDTO, Model model) {
         log.info("영화 리스트 요청");
@@ -28,4 +52,5 @@ public class MovieController {
         PageResultDTO<MovieDTO> result = movieService.getList(pageRequestDTO);
         model.addAttribute("result", result);
     }
+
 }

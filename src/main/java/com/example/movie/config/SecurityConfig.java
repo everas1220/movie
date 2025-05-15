@@ -2,9 +2,11 @@ package com.example.movie.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +14,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices.RememberMeTokenAlgorithm;
+
+//import com.example.board.security.CustomLoginSuccessHandler;
 
 @EnableMethodSecurity // @PreAuthorize, @PostAuthorize 사용
 @EnableWebSecurity
@@ -24,9 +28,12 @@ public class SecurityConfig {
 
                 http.authorizeHttpRequests(authorize -> authorize
                                 .anyRequest().permitAll());
+                http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
+
                 // http.formLogin(login -> login.loginPage("/member/login")
                 // .successHandler(successHandler())
                 // .permitAll());
+
                 // http.logout(logout -> logout
                 // .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
                 // .logoutSuccessUrl("/"));

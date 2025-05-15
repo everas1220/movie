@@ -3,6 +3,7 @@ package com.example.movie.dto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +25,10 @@ public class MovieDTO {
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
+    // 평점
     private double avg;
 
+    // 리뷰수
     private Long reviewCnt;
+
 }

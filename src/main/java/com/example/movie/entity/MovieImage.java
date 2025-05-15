@@ -13,10 +13,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @ToString(exclude = "movie")
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
@@ -25,15 +25,12 @@ public class MovieImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long inum;
-
     private String uuid;
-
     private String imgName;
-
     private String path;
-
     private int ord;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Movie movie;
+
 }

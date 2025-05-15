@@ -20,31 +20,31 @@ import com.example.movie.entity.MovieImage;
 import com.example.movie.entity.Review;
 
 @SpringBootTest
-public class MovieRepositoryTest {
+public class MovieRespositoryTest {
+
+    @Autowired
+    private MovieRepository movieRepository;
+    @Autowired
+    private MovieImageRepository movieImageRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Autowired
     private ReviewRepository reviewRepository;
 
     @Autowired
-    private MovieRepository movieRepository;
-
-    @Autowired
-    private MovieImageRepository movieImageRepository;
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
+    // 영화 삽입
     @Test
     public void insertMovieTest() {
         IntStream.rangeClosed(1, 100).forEach(i -> {
             Movie movie = Movie.builder()
-                    .title("Movie" + i)
+                    .title("Movie " + i)
                     .build();
             movieRepository.save(movie);
 
+            // 임의의 이미지
             int count = (int) (Math.random() * 5) + 1;
             for (int j = 0; j < count; j++) {
                 MovieImage movieImage = MovieImage.builder()
@@ -75,17 +75,21 @@ public class MovieRepositoryTest {
         });
     }
 
+    // 리뷰 삽입
+
     @Test
     public void reviewInsertTest() {
-
+        // 리뷰 200 개 / 영화 100 무작위로 추출 / 멤버 무작위 추출
         IntStream.rangeClosed(1, 200).forEach(i -> {
-            Long mid = (long) (Math.random() * 20) + 1;
 
+            // 멤버아이디 무작위
+            Long mid = (long) (Math.random() * 20) + 1;
+            // 영화 아이디 무작위
             Long mno = (long) (Math.random() * 100) + 1;
 
             Review review = Review.builder()
                     .grade((int) (Math.random() * 5) + 1)
-                    .text("이 영화에 대한 느낌은" + i)
+                    .text("이 영화에 대한 느낌은 " + i)
                     .member(Member.builder().mid(mid).build())
                     .movie(Movie.builder().mno(mno).build())
                     .build();
@@ -103,6 +107,9 @@ public class MovieRepositoryTest {
         Page<Object[]> result = movieImageRepository.getTotalList(null, null, pageable);
 
         for (Object[] objects : result) {
+            // [Movie(mno=100, title=Movie 100), MovieImage(inum=300,
+            // uuid=674034e0-5ed1-4141-9681-9a0e5c6464f6, imgName=test0.jpg, path=null,
+            // ord=0), 2, 2.0]
             System.out.println(Arrays.toString(objects));
         }
     }
@@ -113,5 +120,26 @@ public class MovieRepositoryTest {
         for (Object[] objects : result) {
             System.out.println(Arrays.toString(objects));
         }
+
+        // [Movie(mno=2, title=Movie 2), MovieImage(inum=5,
+        // uuid=7c60db71-e292-4990-84ca-60a45f693736, imgName=test0.jpg, path=null,
+        // ord=0), 5, 3.0]
+
+        // Movie movie = (Movie) result.get(0)[0];
+        // MovieImage movieImage = (MovieImage) result.get(0)[1];
+        // Long cnt = (Long) result.get(0)[2];
+        // Double avg = (Double) result.get(0)[3];
+
+        // Movie movie = (Movie) result.get(1)[0];
+        // MovieImage movieImage = (MovieImage) result.get(1)[1];
+        // Long cnt = (Long) result.get(1)[2];
+        // Double avg = (Double) result.get(1)[3];
+
+        // Movie movie = (Movie) result.get(2)[0];
+        // MovieImage movieImage = (MovieImage) result.get(2)[1];
+        // Long cnt = (Long) result.get(2)[2];
+        // Double avg = (Double) result.get(2)[3];
+
     }
+
 }
