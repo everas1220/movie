@@ -1,6 +1,7 @@
 package com.example.movie.controller;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,7 +24,6 @@ import lombok.extern.log4j.Log4j2;
 import net.coobird.thumbnailator.Thumbnailator;
 
 import org.springframework.web.bind.annotation.GetMapping;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.movie.dto.UploadResultDTO;
@@ -35,13 +35,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class UploadController {
 
-    // application.properties에 작성한 값 불러오기
+    // application.properties 에 작성한 값 불러오기
 
     @Value("${com.example.movie.upload.path}")
     private String uploadPath;
 
     @GetMapping("/create")
-    public String getuploadName() {
+    public String getUploadForm() {
         return "/upload/test";
     }
 
@@ -51,13 +51,12 @@ public class UploadController {
         List<UploadResultDTO> uploadResultDTOs = new ArrayList<>();
 
         for (MultipartFile uploadFile : uploadFiles) {
-            // String oriName = uploadFile.getOriginalFilename();
 
             // String fileName = oriName.substring(oriName.lastIndexOf("\\") + 1);
             // log.info("oriName {}", oriName);
             // log.info("fileName {}", fileName);
 
-            // 이미지가 아닌 다른 파일이 첨부된다면 돌려보냄
+            // 이미지가 아닌 다른 파일이 첨부된다면 돌려보내기
             if (!uploadFile.getContentType().startsWith("image")) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -68,10 +67,9 @@ public class UploadController {
             // 폴더 생성
             String saveFolderPath = makeFolder();
 
-            // 고유 식별자 생성(중복 불가)
-            // UUID는 universally unique identifier의 약자임
+            // 고유 식별자 생성
             String uuid = UUID.randomUUID().toString();
-            // upload/2025/05/15/(UUID)_oriName(기존파일명).jpg
+            // upload/2025/05/15/5d2c8152-fb93-4fa7-baf8-a6327988d7e7_파일명.jpg
             String saveName = uploadPath + File.separator + saveFolderPath + File.separator + uuid + "_" + oriName;
             Path savePath = Paths.get(saveName);
 
@@ -79,10 +77,11 @@ public class UploadController {
                 // 특정폴더에 저장
                 uploadFile.transferTo(savePath);
                 // 썸네일 저장
-                String thumbnailSavedName = uploadPath + File.separator + saveFolderPath + File.separator + uuid + "s_"
+                String thumbnailSavedName = uploadPath + File.separator + saveFolderPath + File.separator + "s_" + uuid
                         + "_" + oriName;
                 File thumbFile = new File(thumbnailSavedName);
                 Thumbnailator.createThumbnail(savePath.toFile(), thumbFile, 100, 100);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -92,15 +91,20 @@ public class UploadController {
     }
 
     @GetMapping("/display")
-    public ResponseEntity<byte[]> getFile(String fileName) {
+    public ResponseEntity<byte[]> getFile(String fileName, String size) {
         ResponseEntity<byte[]> result = null;
         try {
             String srcFileName = URLDecoder.decode(fileName, "utf-8");
             File file = new File(uploadPath + File.separator + srcFileName);
 
+            if (size != null && size.equals("1")) {
+                // s_ 제거
+                file = new File(file.getParent(), file.getName().substring(2));
+            }
+
             HttpHeaders headers = new HttpHeaders();
             // Content-Type : 브라우저에게 보내는 파일 타입이 무엇인지 제공할 때 사용
-            // Content-Type : "application/json","image/jpeg" => MINE 확인
+            // Content-Type : "application/json", "image/jpeg" ==> MIME 확인
             headers.add("Content-Type", Files.probeContentType(file.toPath()));
             result = new ResponseEntity<>(FileCopyUtils.copyToByteArray(file), headers, HttpStatus.OK);
         } catch (Exception e) {
@@ -110,18 +114,39 @@ public class UploadController {
         return result;
     }
 
+    @PostMapping("/removeFile")
+    public ResponseEntity<String> postRemove(String fileName) {
+        log.info("파일 삭제 요청 {}", fileName);
+
+        // 2025/05/16/~~~~~
+        String oriFileName;
+        try {
+            oriFileName = URLDecoder.decode(fileName, "utf-8");
+            // 원본 파일 삭제
+            File file = new File(uploadPath + File.separator + oriFileName);
+            file.delete();
+            // 썸네일 삭제
+            File thumbnail = new File(file.getParent(), "s_" + file.getName());
+            thumbnail.delete();
+
+            return new ResponseEntity<>("success", HttpStatus.OK);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     // 폴더 생성
     private String makeFolder() {
         // LocalDate.now() : 2025-05-15 => format : 2025/05/15
-        String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern(("yyyy/MM/dd")));
-        // File.separator : 운영체제에 맞는 파일구분기호( / or \ )
+        String dateStr = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        // File.separator : 운영체제에 맞는 파일구분기호(/ or \)
         String folderPath = dateStr.replace("/", File.separator);
 
         File uploadPathFolder = new File(uploadPath, folderPath);
         if (!uploadPathFolder.exists())
-            uploadPathFolder.mkdirs();// make directory => mkdirs(약자) : 디렉토리 생성
-
+            uploadPathFolder.mkdirs(); // 디렉토리 생성
         return folderPath;
-
     }
+
 }

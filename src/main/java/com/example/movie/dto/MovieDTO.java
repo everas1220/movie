@@ -20,8 +20,10 @@ import lombok.ToString;
 public class MovieDTO {
     private Long mno;
     private String title;
+
     @Builder.Default
     private List<MovieImageDTO> movieImages = new ArrayList<>();
+
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 

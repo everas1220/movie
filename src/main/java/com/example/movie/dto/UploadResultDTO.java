@@ -15,22 +15,29 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UploadResultDTO {
-    private String flieName;
+    private String fileName;
     private String uuid;
     private String folderPath;
 
     public String getImageURL() {
-
         String fullPath = "";
-
-        // encode
-
         try {
-            fullPath = URLEncoder.encode(folderPath + "/" + uuid + "_" + flieName, "utf-8");
+            fullPath = URLEncoder.encode(folderPath + "/" + uuid + "_" + fileName, "utf-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
         return fullPath;
     }
 
+    public String getThumbnailURL() {
+        String fullPath = "";
+        try {
+            fullPath = URLEncoder.encode(folderPath + "/s_" + uuid + "_" + fileName, "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        return fullPath;
+    }
 }

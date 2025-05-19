@@ -2,7 +2,6 @@ package com.example.movie.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.TokenBasedRememberMeServices.RememberMeTokenAlgorithm;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 //import com.example.board.security.CustomLoginSuccessHandler;
 
@@ -27,16 +27,23 @@ public class SecurityConfig {
                         throws Exception {
 
                 http.authorizeHttpRequests(authorize -> authorize
+                                .requestMatchers("/", "/assets/**", "/css/**", "/js/**", "/upload/**").permitAll()
+                                .requestMatchers("/movie/list", "/movie/read").permitAll()
+                                .requestMatchers("/review/**", "/upload/display/**").permitAll()
+                                .requestMatchers("/movie/register").permitAll()
                                 .anyRequest().permitAll());
                 http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
 
-                // http.formLogin(login -> login.loginPage("/member/login")
-                // .successHandler(successHandler())
-                // .permitAll());
+                // http.csrf(csrf -> csrf.disable());
 
-                // http.logout(logout -> logout
-                // .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
-                // .logoutSuccessUrl("/"));
+                http.formLogin(login -> login.loginPage("/member/login")
+                                .defaultSuccessUrl("/movie/list")
+                                // .successHandler(successHandler())
+                                .permitAll());
+
+                http.logout(logout -> logout
+                                .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
+                                .logoutSuccessUrl("/"));
 
                 // http.rememberMe(remember -> remember.rememberMeServices(rememberMeServices));
 

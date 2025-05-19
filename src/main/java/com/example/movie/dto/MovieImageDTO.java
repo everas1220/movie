@@ -29,7 +29,6 @@ public class MovieImageDTO {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
         return thumbFullPath;
     }
 
@@ -40,7 +39,6 @@ public class MovieImageDTO {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-
         return fullPath;
     }
 }
