@@ -2,7 +2,6 @@ package com.example.movie.dto;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

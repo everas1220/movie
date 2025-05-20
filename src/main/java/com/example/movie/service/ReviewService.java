@@ -22,6 +22,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
 
     public Long insertReply(ReviewDTO reviewDTO) {
+
         Review review = dtoToEntity(reviewDTO);
 
         return reviewRepository.save(review).getRno();
@@ -30,6 +31,21 @@ public class ReviewService {
     public ReviewDTO getReply(Long rno) {
         Review review = reviewRepository.findById(rno).get();
         return entityToDto(review);
+    }
+
+    public ReviewDTO updateReply(ReviewDTO reviewDTO) {
+        // dto => entity
+        Review review = reviewRepository.findById(reviewDTO.getRno()).orElseThrow();
+
+        // 수정
+        review.changeGrade(reviewDTO.getGrade());
+        review.changeText(reviewDTO.getText());
+        review = reviewRepository.save(review);
+        return entityToDto(review);
+    }
+
+    public void removeReply(Long rno) {
+        reviewRepository.deleteById(rno);
     }
 
     public List<ReviewDTO> getReplies(Long mno) {
@@ -45,7 +61,9 @@ public class ReviewService {
                 .rno(reviewDTO.getRno())
                 .grade(reviewDTO.getGrade())
                 .text(reviewDTO.getText())
+                // 멤버 정보
                 .member(Member.builder().mid(reviewDTO.getMid()).build())
+                // 영화정보
                 .movie(Movie.builder().mno(reviewDTO.getMno()).build())
                 .build();
         return review;

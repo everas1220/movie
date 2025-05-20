@@ -29,16 +29,15 @@ public class SecurityConfig {
                 http.authorizeHttpRequests(authorize -> authorize
                                 .requestMatchers("/", "/assets/**", "/css/**", "/js/**", "/upload/**").permitAll()
                                 .requestMatchers("/movie/list", "/movie/read").permitAll()
-                                .requestMatchers("/review/**", "/upload/display/**").permitAll()
-                                .requestMatchers("/movie/register").permitAll()
+                                .requestMatchers("/reviews/**", "/upload/display/**").permitAll()
+                                .requestMatchers("/member/register").permitAll()
                                 .anyRequest().permitAll());
                 http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS));
 
                 // http.csrf(csrf -> csrf.disable());
 
                 http.formLogin(login -> login.loginPage("/member/login")
-                                .defaultSuccessUrl("/movie/list")
-                                // .successHandler(successHandler())
+                                .defaultSuccessUrl("/")
                                 .permitAll());
 
                 http.logout(logout -> logout

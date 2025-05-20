@@ -17,7 +17,7 @@ const formatDate = (str) => {
 // 리뷰 영역 가져오기
 const reviewDiv = document.querySelector(".reviewList");
 const reviewForm = document.querySelector("#reviewForm");
-const reviewCnt = document.querySelector("#review-cnt");
+const reviewCnt = document.querySelector(".review-cnt");
 
 const reviewList = () => {
   //리뷰 가져오기
@@ -37,10 +37,10 @@ const reviewList = () => {
       result += `<div class="text-muted"><span class="small">${formatDate(review.createdDate)}</span></div></div>`;
       result += `<div class="d-flex flex-column align-self-center">`;
       // 로그인 사용자 == 댓글작성자
-      //if (loginUser == reply.replyerEmail) {
-      result += `<div class="mb-2"><button class="btn btn-outline-danger btn-sm">삭제</button></div>`;
-      result += `<div><button class="btn btn-outline-success btn-sm">수정</button></div>`;
-      // }
+      if (loginUser == review.email) {
+        result += `<div class="mb-2"><button class="btn btn-outline-danger btn-sm">삭제</button></div>`;
+        result += `<div><button class="btn btn-outline-success btn-sm">수정</button></div>`;
+      }
       result += `</div></div>`;
     });
 
@@ -88,8 +88,8 @@ reviewDiv.addEventListener("click", (e) => {
       //reviewForm 안에 보여주기
       reviewForm.rno.value = data.rno;
       reviewForm.nickname.value = data.nickname;
-      // 멤버 아이디 
-      reviewForm.email.value = data.mid;
+      // 멤버 아이디
+      reviewForm.mid.value = data.mid;
       reviewForm.querySelector(".starrr a:nth-child(" + data.grade + ")").click();
       reviewForm.text.value = data.text;
     });
@@ -121,66 +121,9 @@ if (reviewForm) {
 
           // form 기존 내용 지우기
           reviewForm.rno.value = "";
-          reviewForm.email.value = "";
-          reviewForm.nickname.value = "";
-          reviewForm.text.value = "";
-          reviewForm.querySelector(".starrr a:nth-child(" + grade + ")").click();
-
-          // 수정 내용 반영
-          reviewList();
-        });
-    } else {
-      // 삽입
-      axios
-        .post("/replies/new", form, {
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": csrf,
-          },
-        })
-        .then((res) => {
-          alert(res.data + " 댓글 등록");
-
-          // form 기존 내용 지우기
-          reviewForm.rno.value = "";
           reviewForm.mid.value = "";
           reviewForm.nickname.value = "";
           reviewForm.text.value = "";
-
-          // 삽입 내용 반영
-          reviewList();
-        });
-    }
-  });
-}
-
-// 리뷰 등록 및 수정
-if (reviewForm) {
-  reviewForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const form = e.target;
-    const rno = form.rno.value;
-
-    form.grade.value = grade;
-
-    if (rno) {
-      //수정
-      axios
-        .put(`/reviews/${mno}/${rno}`, form, {
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": csrf,
-          },
-        })
-        .then((res) => {
-          console.log(res.data);
-          alert("리뷰 수정 완료");
-
-          // form 기존 내용 지우기
-          reviewForm.rno.value = "";
-          reviewForm.nickname.value = "";
-          reviewForm.text.value = "";
           reviewForm.querySelector(".starrr a:nth-child(" + grade + ")").click();
 
           // 수정 내용 반영
@@ -189,7 +132,7 @@ if (reviewForm) {
     } else {
       // 삽입
       axios
-        .post("/replies/new", form, {
+        .post(`/reviews/${mno}`, form, {
           headers: {
             "Content-Type": "application/json",
             "X-CSRF-TOKEN": csrf,
@@ -200,8 +143,8 @@ if (reviewForm) {
 
           // form 기존 내용 지우기
           reviewForm.rno.value = "";
-          reviewForm.replyerName.value = "";
           reviewForm.text.value = "";
+          reviewForm.querySelector(".starrr a:nth-child(" + grade + ")").click();
 
           // 삽입 내용 반영
           reviewList();
@@ -209,4 +152,3 @@ if (reviewForm) {
     }
   });
 }
-
